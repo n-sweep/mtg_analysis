@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# get base directory of the repo
+base_dir=$(git rev-parse --show-toplevel)
+
+bulk_meta=$(curl -s https://api.scryfall.com/bulk-data)
+
+# type=$( (echo "all"; echo $bulk_meta | jq -r '.data[].type') | fzf )
+
+type=$(echo $bulk_meta | jq -r '.data[].type' | fzf)
+dl_url=$(echo $bulk_meta | jq -r ".data[] | select(.type == \"$type\") | .download_uri")
+
+curl -o "$base_dir/$(basename $dl_url)" $dl_url
